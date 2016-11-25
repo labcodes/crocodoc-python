@@ -2,6 +2,7 @@ from crocodoc import document
 from crocodoc import session
 from crocodoc import download
 
+from exceptions import ValueError
 
 api_token = ""
 base_url = "https://crocodoc.com/api/v2/"
@@ -27,10 +28,13 @@ class CrocodocError(Exception):
 
 def check_response(r, ignore_json=False):
     if not ignore_json:
-        if not r.json():
-            raise CrocodocError("server_response_not_valid_json", r)
-        elif isinstance(r.json(), dict) and "error" in r.json():
-            raise CrocodocError(r.json()["error"], r)
+        try:
+            if not r.json():
+                raise CrocodocError("server_response_not_valid_json", r)
+            elif isinstance(r.json(), dict) and "error" in r.json():
+                raise CrocodocError(r.json()["error"], r)
+        except ValueError as ex:
+            raise CrocodocError(ex.message, r)
 
     http_4xx_error_codes = {
         400: 'bad_request',
