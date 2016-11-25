@@ -18,12 +18,13 @@ class CrocodocError(Exception):
         if response is not None:
             self.status_code = response.status_code
             self.response_content = response.content
-            
+
     def __str__(self):
         content = self.response_content
         if self.response_content and len(self.response_content) > 100:
             content = self.response_content[:100] + "..."
-        return "\n\t%s \n\tResponse status code: %s \n\tResponse content: %s" % (self.error_message, self.status_code, content)
+        return "\n\t%s \n\tResponse status code: %s \n\tResponse content: %s" % (
+            self.error_message, self.status_code, content)
 
 
 def check_response(r, ignore_json=False):
@@ -42,7 +43,7 @@ def check_response(r, ignore_json=False):
         404: 'not_found',
         405: 'method_not_allowed'
     }
-    
+
     if r.status_code in http_4xx_error_codes:
         error = 'server_error_%s_%s' % (r.status_code, http_4xx_error_codes[r.status_code])
         raise CrocodocError(error, r)
